@@ -13,22 +13,20 @@ pipeline {
                 sh 'echo "Building..."'
             }
         }
-        
-        stages {
-        stage('Terraform Apply') {
+
+        stage("Create EKS Infrastructure") {
             steps {
-                dir ('Jenkins_CICD/aws_eks') {
-                    sh 'terraform init'
-                    sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
-                    sh "sed -i 's/enable_classiclink_dns_support = null/# enable_classiclink_dns_support = null/g' .terraform/modules/bog-vpc/main.tf"
-                    sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
-                    sh "sed -i 's/vpc = true/domain = \"vpc\"/g' main.tf"
-                    sh 'terraform apply -auto-approve'
-                    sh 'export CLUSTER_NAME=$(terraform output -raw cluster_name)'
+                script {
+                    dir ('Jenkins_CICD/aws_eks') {
+                        sh 'terraform init'
+                        sh 'sudo chmod +x comment_lines.sh'
+                        sh './comment_lines.sh'
+                        sh 'terraform apply -auto-approve'
+                        sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
+                    }
                 }
             }
         }
-    }
         
       
        
