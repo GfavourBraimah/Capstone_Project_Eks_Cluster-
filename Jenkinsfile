@@ -13,23 +13,22 @@ pipeline {
                 sh 'echo "Building..."'
             }
         }
-
-        stage("Create EKS Infrastructure") {
+        
+        stages {
+        stage('Terraform Apply') {
             steps {
-                script {
-                    dir ('Jenkins_CICD/aws_eks') {
-                        sh 'terraform init'
-                         // Use sed to comment out the lines in the main.tf file inside the bog-vpc module
-                        sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
-                        sh "sed -i 's/enable_classiclink_dns_support = null/# enable_classiclink_dns_support = null/g' .terraform/modules/bog-vpc/main.tf"
-                        sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
-                         sh "sed -i 's/vpc = true/domain = \"vpc\"/g' main.tf"
-                        sh 'terraform apply -auto-approve'
-                        sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
-                    }
+                dir ('Jenkins_CICD/aws_eks') {
+                    sh 'terraform init'
+                    sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
+                    sh "sed -i 's/enable_classiclink_dns_support = null/# enable_classiclink_dns_support = null/g' .terraform/modules/bog-vpc/main.tf"
+                    sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
+                    sh "sed -i 's/vpc = true/domain = \"vpc\"/g' main.tf"
+                    sh 'terraform apply -auto-approve'
+                    sh 'export CLUSTER_NAME=$(terraform output -raw cluster_name)'
                 }
             }
         }
+    }
         
       
        
