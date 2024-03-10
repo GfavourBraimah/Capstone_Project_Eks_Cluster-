@@ -18,8 +18,8 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/aws_eks') {
+                         sh 'chmod +x comment_lines.sh'
                         sh 'terraform init'
-                        sh 'chmod +x comment_lines.sh'
                         sh './comment_lines.sh'
                         sh 'terraform apply -auto-approve'
                         sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
