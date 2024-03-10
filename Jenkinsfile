@@ -1,0 +1,105 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent any
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-1'
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building..."'
+            }
+        }
+
+        stage("Create EKS Infrastructure") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/aws_eks') {
+                        sh 'terraform init'
+                         // Use sed to comment out the lines in the main.tf file inside the bog-vpc module
+                        sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
+                        sh "sed -i 's/enable_classiclink_dns_support = null/# enable_classiclink_dns_support = null/g' .terraform/modules/bog-vpc/main.tf"
+                        sh "sed -i 's/enable_classiclink             = null/# enable_classiclink             = null/g' .terraform/modules/bog-vpc/main.tf"
+                         sh "sed -i 's/vpc = true/domain = \"vpc\"/g' main.tf"
+                        sh 'terraform apply -auto-approve'
+                        sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
+                    }
+                }
+            }
+        }
+        
+      
+       
+        stage("Deploy nginx Ingress") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/k8s') {
+                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-eks"
+                        sh 'kubectl create ns ingress-nginx'
+                        sh 'helm repo and ingress nginx https://kubernetes.github.io/ingress-nginx'
+                        sh 'heml install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
+                        sh 'sudo chmod u+x get_external_ip.sh'
+                        sh './get_external_ip.sh'
+                        sh 'kubectl get deploy -n ingress-nginx' // verify deployment 
+                        sh 'kubectl get svc -n ingress-nginx'     // check the servoice and ensure a loadbalancer is created 
+                    }
+                }
+            }
+        }
+
+           stage("Configure DNS") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/k8s') {
+                        sh 'terraform init'
+                        sh 'terraform apply -auto-approve'
+                    }
+                }
+            }
+        }
+
+        stage("Deploy the socks shop application") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/k8s') {
+                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-eks-vNp6U16l"
+                        sh 'kubectl apply -f sock-shop.yaml'
+                        sh 'kubectl get deploy -n sock-shop'
+                        sh 'kubectl get svc -n sock-shop'
+                    }
+                }
+            }
+        }
+
+        stage("Deploy the frontend service ") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/k8s') {
+                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-eks'
+                        sh 'kubectl create namespace cert-manager'
+                        sh 'kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml'
+                        sh 'kubectl get pods --namespace cert-manager'
+                        sh 'kubectl apply --namespace sock-shop -f cluster-issuer.yaml'
+                        sh 'kubectl apply -f sock-shop-ingress.yaml'
+                        sh 'kubectl get services -n sock-shop'
+                    }
+                }
+            }
+        }
+
+        stage("Deploy Prometheus Manifests") {
+            steps {
+                script {
+                    dir ('Jenkins_CICD/') {
+                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-eks'
+                        sh 'kubectl apply -f manifests-monitoring/'
+                    }
+                }
+            }
+        }
+    }
+}
+
