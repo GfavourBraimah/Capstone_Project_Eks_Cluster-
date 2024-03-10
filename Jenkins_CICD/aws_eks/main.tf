@@ -2,9 +2,10 @@ provider "aws" {
   region = var.region
 }
 
-module "eks" {
-  source           = "terraform-aws-modules/eks/aws"
-  version          = "~> 19.0"
+
+ module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.7.0"
   cluster_name     = var.cluster_name
   cluster_version  = var.cluster_version
   cluster_endpoint_public_access = true
