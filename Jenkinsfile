@@ -19,7 +19,7 @@ pipeline {
                 script {
                     dir ('Jenkins_CICD/aws_eks') {
                         sh 'terraform init'
-                        sh 'sudo chmod +x comment_lines.sh'
+                        sh 'chmod +x comment_lines.sh'
                         sh './comment_lines.sh'
                         sh 'terraform apply -auto-approve'
                         sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
@@ -38,7 +38,7 @@ pipeline {
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo and ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'heml install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
-                        sh 'sudo chmod u+x get_external_ip.sh'
+                        sh 'chmod u+x get_external_ip.sh'
                         sh './get_external_ip.sh'
                         sh 'kubectl get deploy -n ingress-nginx' // verify deployment 
                         sh 'kubectl get svc -n ingress-nginx'     // check the servoice and ensure a loadbalancer is created 
