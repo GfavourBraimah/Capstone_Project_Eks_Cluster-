@@ -37,7 +37,7 @@ pipeline {
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'heml install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
-                        sh 'chmod +x get_external_ip.sh' // make the script executable
+                        sh 'chmod +x get_external_ip.sh'
                         sh './get_external_ip.sh'
                         sh 'kubectl get deploy -n ingress-nginx' // verify deployment 
                         sh 'kubectl get svc -n ingress-nginx'     // check the service and ensure a loadbalancer is created 
