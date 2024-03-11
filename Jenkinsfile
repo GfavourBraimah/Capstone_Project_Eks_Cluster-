@@ -35,7 +35,7 @@ pipeline {
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region eu-west-1 update-kubeconfig --name bog-cluster"
                         sh 'kubectl create ns ingress-nginx'
-                        sh 'helm repo and ingress nginx https://kubernetes.github.io/ingress-nginx'
+                        sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'heml install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
                         sh 'chmod +x get_external_ip.sh' // make the script executable
                         sh './get_external_ip.sh'
