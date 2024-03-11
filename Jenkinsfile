@@ -18,9 +18,8 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/aws_eks') {
-                         sh 'chmod +x comment_lines.sh'
+                        
                         sh 'terraform init'
-                        sh './comment_lines.sh'
                         sh 'terraform apply -auto-approve'
                         sh 'export echo CLUSTER_NAME=$(terraform output -raw cluster_name)'
                     }
@@ -34,14 +33,14 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
-                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-eks"
+                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-cluster"
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo and ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'heml install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
-                        sh 'chmod u+x get_external_ip.sh'
+                        sh 'chmod +x get_external_ip.sh' // make the script executable
                         sh './get_external_ip.sh'
                         sh 'kubectl get deploy -n ingress-nginx' // verify deployment 
-                        sh 'kubectl get svc -n ingress-nginx'     // check the servoice and ensure a loadbalancer is created 
+                        sh 'kubectl get svc -n ingress-nginx'     // check the service and ensure a loadbalancer is created 
                     }
                 }
             }
@@ -62,7 +61,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
-                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-eks-vNp6U16l"
+                        sh "aws eks --region eu-west-1 update-kubeconfig --name bog-cluster"
                         sh 'kubectl apply -f sock-shop.yaml'
                         sh 'kubectl get deploy -n sock-shop'
                         sh 'kubectl get svc -n sock-shop'
@@ -75,7 +74,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
-                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-eks'
+                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-cluster'
                         sh 'kubectl create namespace cert-manager'
                         sh 'kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml'
                         sh 'kubectl get pods --namespace cert-manager'
@@ -91,7 +90,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/') {
-                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-eks'
+                        sh 'aws eks --region eu-west-1 update-kubeconfig --name bog-cluster'
                         sh 'kubectl apply -f manifests-monitoring/'
                     }
                 }
@@ -99,4 +98,5 @@ pipeline {
         }
     }
 }
+
 
