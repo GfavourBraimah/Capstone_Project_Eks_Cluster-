@@ -2,7 +2,7 @@
 
 variable "region" {
   type    = string
-  default = "eu-west-1"
+  default = "eu-west-2"
 }
 
 variable "vpc_cidr" {
@@ -22,7 +22,7 @@ variable "private_subnets" {
 
 variable "cluster_name" {
   type    = string
-  default = "bg-cluster"
+  default = "bog-cluster"
 }
 
 variable "cluster_version" {

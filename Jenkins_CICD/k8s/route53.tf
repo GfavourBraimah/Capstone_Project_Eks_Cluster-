@@ -1,3 +1,5 @@
+
+
 data "external" "external_ip" {
   program = ["bash", "${path.module}/get_external_ip.sh"]
 }
