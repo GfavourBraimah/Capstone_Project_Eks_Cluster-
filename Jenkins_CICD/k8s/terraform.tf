@@ -4,7 +4,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = ">= 4.48.0"
-       region = eu-west-2
     }
 
     helm = {
