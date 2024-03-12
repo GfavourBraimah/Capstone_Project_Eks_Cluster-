@@ -25,6 +25,9 @@ provider "aws" {
       min_size       = 1
       max_size       = 3
       desired_size   = 2
+       metadata_options = {
+        instance_metadata_tags = "disabled"
+      }
     }
   }
 }
