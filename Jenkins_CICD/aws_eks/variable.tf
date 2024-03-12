@@ -22,7 +22,7 @@ variable "private_subnets" {
 
 variable "cluster_name" {
   type    = string
-  default = "bog_cluster"
+  default = "bg-cluster"
 }
 
 variable "cluster_version" {
