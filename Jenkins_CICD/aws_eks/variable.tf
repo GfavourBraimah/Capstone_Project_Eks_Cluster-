@@ -31,6 +31,6 @@ variable "cluster_version" {
 }
 
 variable "node_instance_types" {
-  type    = string
-  default = "t2.medium"
+  type    = list(string)
+  default = ["t2.medium"]
 }
