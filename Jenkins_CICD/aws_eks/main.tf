@@ -23,7 +23,7 @@ provider "aws" {
       name           = "worker-node-1"
       instance_types = var.node_instance_types
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       desired_size   = 1
     }
   }
