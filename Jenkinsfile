@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
-                        sh 'aws eks --region eu-west-2 update-kubeconfig --name  ${CLUSTER_NAME}'
+                        sh "aws eks --region eu-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
                         sh 'kubectl create namespace cert-manager'
                         sh 'kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml'
                         sh 'kubectl get pods --namespace cert-manager'
@@ -92,7 +92,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/') {
-                        sh 'aws eks --region eu-west-2 update-kubeconfig --name  ${CLUSTER_NAME}'
+                        sh "aws eks --region eu-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
                         sh 'kubectl apply -f manifests-monitoring/'
                     }
                 }
