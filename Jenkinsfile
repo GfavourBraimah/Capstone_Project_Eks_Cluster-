@@ -36,6 +36,8 @@ pipeline {
                 script {
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region eu-west-3 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh 'kubectl apply -f jenkins-clusterrole.yaml'
+                        sh 'kubectl apply -f jenkins-clusterrolebinding.yaml'
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'helm install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
