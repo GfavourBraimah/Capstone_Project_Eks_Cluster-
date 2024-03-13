@@ -64,6 +64,7 @@ pipeline {
                 script {
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region eu-west-3 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh 'kubectl apply -f jenkins-clusterrole.yaml'
                         sh 'kubectl apply -f sock-shop.yaml'
                         sh 'kubectl get deploy -n sock-shop'
                         sh 'kubectl get svc -n sock-shop'

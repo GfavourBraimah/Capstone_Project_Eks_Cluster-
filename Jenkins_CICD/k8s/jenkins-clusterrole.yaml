@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jenkins-admin
+rules:
+- apiGroups: [""]
+  resources: ["namespaces", "pods", "services", "deployments", "ingresses", "secrets"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
+- apiGroups: ["cert-manager.io"]
+  resources: ["issuers", "certificates"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
