@@ -29,15 +29,22 @@ pipeline {
             }
         }
         
-      
+       stage("Copy .kube Folder into Jenkins Container") {
+            steps {
+                script {
+                    // Find the path to the .kube folder on the host machine
+                    def kubeFolder = sh(script: 'find / -name .kube -type d', returnStdout: true).trim()
+                    // Copy the .kube folder into the Jenkins container
+                    sh "docker cp ${kubeFolder} jenkins_container:/var/jenkins_home/.kube"
+                }
+            }
+        }    
        
         stage("Deploy nginx Ingress") {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region eu-west-3 update-kubeconfig --name  ${CLUSTER_NAME}"
-                        sh 'kubectl apply -f jenkins-clusterrole.yaml'
-                        sh 'kubectl apply -f jenkins-clusterrolebinding.yaml'
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'helm install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // deployed nginx-ingress-controller in the ingress-nginx namespace
