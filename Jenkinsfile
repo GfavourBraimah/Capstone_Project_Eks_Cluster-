@@ -17,18 +17,6 @@ pipeline {
             }
         }
 
-        stage("Create EKS Infrastructure") {
-            steps {
-                script {
-                    dir ('Jenkins_CICD/aws_eks') {
-                        sh 'terraform init'
-                        sh 'terraform apply -auto-approve'
-                        CLUSTER_NAME = sh(script: 'terraform output -raw cluster_name', returnStdout: true).trim()
-                        echo "Cluster name: ${CLUSTER_NAME}"
-                    }
-                }
-            }
-        }
 
         stage("Deploy nginx Ingress") {
             steps {
