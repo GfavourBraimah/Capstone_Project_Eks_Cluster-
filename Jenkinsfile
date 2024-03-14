@@ -33,7 +33,7 @@ pipeline {
         stage("Copy .kube Folder into Jenkins Container") {
             steps {
                 script {
-                    dir('/tmp') {
+                   
                         // Install kubectl
                        
                         // Install aws-iam-authenticator
