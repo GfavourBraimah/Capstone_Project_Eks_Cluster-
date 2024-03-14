@@ -30,27 +30,6 @@ pipeline {
             }
         }
 
-        stage("Copy .kube Folder into Jenkins Container") {
-            steps {
-                script {
-                   
-                        // Install kubectl
-                       
-                        // Install aws-iam-authenticator
-                        sh "curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator"
-                        sh "chmod +x ./aws-iam-authenticator"
-                        sh "mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator"
-                        
-                        // Add aws-iam-authenticator to PATH
-                        sh "mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin"
-                        sh "echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc"
-                        sh 'kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml'
-
-                    }
-                }
-            }
-        }
-   
         stage("Deploy nginx Ingress") {
             steps {
                 script {
