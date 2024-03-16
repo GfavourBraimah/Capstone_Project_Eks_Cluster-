@@ -23,7 +23,6 @@ pipeline {
         stage("Deploy nginx Ingress") {
             steps {
                 script {
-                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
                     
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
@@ -53,7 +52,6 @@ pipeline {
         stage("Deploy the socks shop application") {
             steps {
                 script {
-                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
                     
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
@@ -68,7 +66,6 @@ pipeline {
         stage("Deploy the frontend service") {
             steps {
                 script {
-                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
                     
                     dir ('Jenkins_CICD/k8s') {
                         sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
