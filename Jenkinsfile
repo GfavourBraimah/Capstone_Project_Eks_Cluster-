@@ -7,8 +7,10 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-west-2'
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        CLUSTER_NAME = ''  // Initialize CLUSTER_NAME variable
+        CLUSTER_NAME = 'bog-eks-oTdBVLNj'  // Set the default cluster name here
     }
+    
+   
     
     stages {
         stage('Build') {
@@ -21,8 +23,10 @@ pipeline {
         stage("Deploy nginx Ingress") {
             steps {
                 script {
+                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
+                    
                     dir ('Jenkins_CICD/k8s') {
-                        sh "aws eks --region us-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'helm install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // Deploy nginx-ingress-controller in the ingress-nginx namespace
@@ -49,8 +53,10 @@ pipeline {
         stage("Deploy the socks shop application") {
             steps {
                 script {
+                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
+                    
                     dir ('Jenkins_CICD/k8s') {
-                        sh "aws eks --region us-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
                         sh 'kubectl apply -f sock-shop.yaml'
                         sh 'kubectl get deploy -n sock-shop'
                         sh 'kubectl get svc -n sock-shop'
@@ -62,8 +68,10 @@ pipeline {
         stage("Deploy the frontend service") {
             steps {
                 script {
+                    CLUSTER_NAME = params.CLUSTER_NAME_PARAM ?: CLUSTER_NAME  // Use the parameter value if provided, otherwise use the default
+                    
                     dir ('Jenkins_CICD/k8s') {
-                        sh "aws eks --region us-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
                         sh 'kubectl create namespace cert-manager'
                         sh 'kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml'
                         sh 'kubectl get pods --namespace cert-manager'
@@ -78,8 +86,9 @@ pipeline {
         stage("Deploy Prometheus Manifests") {
             steps {
                 script {
+                    
                     dir ('Jenkins_CICD/') {
-                        sh "aws eks --region us-west-2 update-kubeconfig --name  ${CLUSTER_NAME}"
+                        sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}"
                         sh 'kubectl apply -f manifests-monitoring/'
                     }
                 }
