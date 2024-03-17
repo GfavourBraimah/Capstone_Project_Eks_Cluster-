@@ -231,7 +231,7 @@ spec:
         - name: mysql
           containerPort: 3306
       nodeSelector:
-        kubernetes.io/os: linux
+        beta.kubernetes.io/os: linux
 ---
 apiVersion: v1
 kind: Service
