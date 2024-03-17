@@ -7,6 +7,10 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-west-2'
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+<<<<<<< HEAD
+=======
+        CLUSTER_NAME = 'bog-eks-oTdBVLNj'  // Set the default cluster name here
+>>>>>>> 2e1985631859220e12eb4042037c59b61cc5e752
     }
     
    
