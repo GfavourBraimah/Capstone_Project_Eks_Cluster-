@@ -4,9 +4,9 @@ pipeline {
     agent any
     
     environment {
-        AWS_DEFAULT_REGION = 'us-west-2'
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_DEFAULT_REGION = 'us-west-2'
 
     }
     
@@ -25,6 +25,7 @@ pipeline {
                 script {
                     
                     dir ('Jenkins_CICD/k8s') {
+                        
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'helm install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // Deploy nginx-ingress-controller in the ingress-nginx namespace

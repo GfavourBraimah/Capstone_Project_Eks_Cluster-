@@ -1,0 +1,48 @@
+#!/usr/bin/env groovy
+pipeline {
+    agent any
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_DEFAULT_REGION = "us-west-2"
+    }
+    parameters{
+        choice(name: 'ENVIRONMENT', choices: ['create', 'destroy'], description: 'create and destroy cluster with one click')
+    }
+
+    stages {
+        stage("Create an EKS Cluster") {
+            when {
+                expression { params.ENVIRONMENT == 'create' }
+            }
+            steps {
+                script {
+                    dir('aws_eks') {
+                        sh "terraform init"
+                        sh "terraform apply -auto-approve"
+
+                        // Capture and print Terraform outputs
+                        def clusterName = sh(script: "terraform output -raw cluster_name", returnStdout: true).trim()
+                        def region = sh(script: "terraform output -raw region", returnStdout: true).trim()
+
+                        echo "Cluster Name: ${clusterName}"
+                        echo "Region: ${region}"
+                    }
+                }
+            }
+        }
+
+        stage("Destroy an EKS Cluster") {
+            when {
+                expression { params.ENVIRONMENT == 'destroy' }
+            }
+            steps {
+                script {
+                    dir('aws_eks') {
+                        sh "terraform destroy -auto-approve"
+                    }
+                }
+            }
+        }
+    }
+}

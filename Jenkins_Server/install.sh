@@ -1,57 +1,93 @@
-#!/bin/bash
+# update the ubuntu server
+sudo apt-get update -y
+sudo apt-get upgrade -y
 
-# Install Docker on the host machine
-sudo yum update -y
-sudo yum install -y docker
-sudo systemctl start docker
-sudo systemctl enable docker
 
-# Pull Jenkins Docker image
-sudo docker pull jenkins/jenkins:lts
+# install unzip
 
-# Run Jenkins Docker container
-sudo docker run -p 8080:8080 -p 50000:50000 -d -v jenkins_home:/var/jenkins_home --name jenkins_container jenkins/jenkins:lts
+sudo apt-get install unzip
 
-# Go into the container and install all the dependencies
-sudo docker exec -u 0 jenkins_container /bin/bash -c '
-# Update package repositories
-apt-get update
+# install terraform
 
-# Install necessary tools
-apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common \
-    unzip
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
 
-# Install Git
-apt-get install -y git
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+gpg --dearmor | \
+sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
 
-# Install Terraform
-curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(cat /etc/os-release | grep VERSION_CODENAME | cut -d= -f2) main" > /etc/apt/sources.list.d/hashicorp.list
-apt-get update && apt-get install -y terraform
+gpg --no-default-keyring \
+--keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+--fingerprint
 
-# Install kubectl
-curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-chmod +x ./kubectl
-mv ./kubectl /usr/local/bin/kubectl
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+sudo tee /etc/apt/sources.list.d/hashicorp.list
 
-# Install AWS CLI
+sudo apt-get update && sudo apt-get install terraform
+
+# install kubectl
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+chmod +x kubectl 
+mkdir -p ~/.local/bin
+mv ./kubectl ~/.local/bin/kubectl
+
+
+# install aws cli
+
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
 unzip awscliv2.zip
-./aws/install
 
-# Install Helm
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-chmod +x get_helm.sh
-./get_helm.sh
-'
+sudo ./aws/install --update
 
-# Install aws-iam-authenticator
-curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator
-chmod +x ./aws-iam-authenticator
-mv ./aws-iam-authenticator /usr/local/bin
-aws-iam-authenticator help
+# install helm
+
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+
+sudo apt-get install apt-transport-https --yes
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+sudo apt-get update
+
+sudo apt-get install helm
+
+
+# install jenkins
+
+sudo apt install fontconfig openjdk-17-jre -y
+
+java -version
+
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt-get update -y
+
+sudo apt-get install jenkins -y
+
+sudo systemctl enable jenkins
+
+sudo systemctl start jenkins
+
+sudo systemctl status jenkins
+
+sudo ufw allow OpenSSH 
+
+sudo ufw enable
+
+sudo ufw allow 8080
+
+sudo ufw status
