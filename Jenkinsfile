@@ -2,16 +2,7 @@
 
 pipeline {
     agent any
-    
-    environment {
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        AWS_DEFAULT_REGION = 'us-west-2'
 
-    }
-    
-   
-    
     stages {
         stage('Build') {
             steps {
@@ -25,7 +16,7 @@ pipeline {
                 script {
                     
                     dir ('Jenkins_CICD/k8s') {
-                        sh 'aws eks --region us-west-2 update-kubeconfig --name bog-eks-47Lr22ua'
+                        sh ('aws eks update-kubeconfig --name bog-eks-fe8DPRlC --region us-west-2')
                         sh 'kubectl create ns ingress-nginx'
                         sh 'helm repo add ingress nginx https://kubernetes.github.io/ingress-nginx'
                         sh 'helm install nginx ingress-nginx/ingress-nginx -n ingress-nginx' // Deploy nginx-ingress-controller in the ingress-nginx namespace
@@ -42,7 +33,7 @@ pipeline {
             steps {
                 script {
                     dir ('Jenkins_CICD/k8s') {
-                         sh 'aws eks --region us-west-2 update-kubeconfig --name bog-eks-47Lr22ua'
+                        sh ('aws eks update-kubeconfig --name bog-eks-fe8DPRlC --region us-west-2')
                         sh 'terraform init'
                         sh 'terraform apply -auto-approve'
                     }
@@ -55,7 +46,7 @@ pipeline {
                 script {
                     
                     dir ('Jenkins_CICD/k8s') {
-                         sh 'aws eks --region us-west-2 update-kubeconfig --name bog-eks-47Lr22ua'
+                        sh ('aws eks update-kubeconfig --name bog-eks-fe8DPRlC --region us-west-2')
                         sh 'kubectl apply -f sock-shop.yaml'
                         sh 'kubectl get deploy -n sock-shop'
                         sh 'kubectl get svc -n sock-shop'
@@ -69,7 +60,7 @@ pipeline {
                 script {
                     
                     dir ('Jenkins_CICD/k8s') {
-                         sh 'aws eks --region us-west-2 update-kubeconfig --name bog-eks-47Lr22ua'
+                        sh ('aws eks update-kubeconfig --name bog-eks-fe8DPRlC --region us-west-2')
                         sh 'kubectl create namespace cert-manager'
                         sh 'kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml'
                         sh 'kubectl get pods --namespace cert-manager'
@@ -86,7 +77,7 @@ pipeline {
                 script {
                     
                     dir ('Jenkins_CICD/') {
-                         sh 'aws eks --region us-west-2 update-kubeconfig --name bog-eks-47Lr22ua'
+                        sh ('aws eks update-kubeconfig --name bog-eks-fe8DPRlC --region us-west-2')
                         sh 'kubectl apply -f manifests-monitoring/'
                     }
                 }
