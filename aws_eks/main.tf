@@ -76,15 +76,5 @@ module "eks" {
       max_size     = 2
       desired_size = 1
     }
-
-    three = {
-      name = "worker-node-3"
-
-      instance_types = ["t2.medium"]
-
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
-    }
   }
 }

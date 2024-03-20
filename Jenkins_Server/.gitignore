@@ -6,7 +6,7 @@
 *.tfstate.*
 *.tfplan
 .terraform.lock.hcl
-
+my_jenk.pem 
 # Crash log files
 crash.log
 

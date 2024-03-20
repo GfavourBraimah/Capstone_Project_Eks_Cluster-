@@ -1,8 +1,5 @@
 
 
-resource "aws_key_pair" "ssh-key" {
-  public_key = file(var.public_key_location)
-}
 
 
 resource "aws_instance" "myapp-server" {
@@ -12,7 +9,7 @@ resource "aws_instance" "myapp-server" {
   vpc_security_group_ids = [ aws_default_security_group.default-sg.id ]
   availability_zone = var.avail_zone
   associate_public_ip_address = true 
-  key_name = aws_key_pair.ssh-key.key_name
+  key_name = var.key_name
     
      user_data = file("install.sh")
      tags = {
