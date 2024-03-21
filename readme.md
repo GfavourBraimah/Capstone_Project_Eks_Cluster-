@@ -1,3 +1,5 @@
+![prov](/images/alt.svg)
+
 ## Microservice Sockshop Deployment 
 
 Microservices architecture is an approach to software development where a large application is broken down into smaller, independent services that communicate with each other through APIs (Application Programming Interfaces). Each service focuses on a specific business capability and can be developed, deployed, and scaled independently. This architecture promotes modularity, agility, scalability, and easier maintenance compared to traditional monolithic applications. It allows teams to work on different services concurrently, fosters rapid deployment and updates, and enables flexibility in technology choices for each service.
@@ -97,7 +99,7 @@ This will create the VPC (and all its other components), I'm using  a new  keypa
 
 Get the jenkins password, inside the ubuntu instance run this command 
 ```
-    cat /var/lib/jenkins/secrets/initialAdminPassword
+   sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
 Now paste the password in the jenkins application then you are in 
