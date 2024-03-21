@@ -9,7 +9,7 @@ The Sock Shop application is a popular reference microservices-based application
 This project aims to deploy a microservices-based architecture application on Kubernetes using an Infrastructure as Code (IaC) approach. The application is based on the Socks Shop example microservice application.
 
 
----
+ ```
    ├── Jenkins_CICD/
 │   ├── k8s/
 │   │   ├── cluster-issuer.yaml
@@ -22,7 +22,7 @@ This project aims to deploy a microservices-based architecture application on Ku
 │   ├── manifests-monitoring/
 │   │   ├── 00-monitoring-ns.yaml
 │   │   ├── 01-prometheus-sa.yaml
-│   │   ├── ...
+│   │   ├── .....
 ├── Jenkinsfile
 ├── Eks-Jenkinsfile
 ├── Jenkins_Server/
@@ -33,20 +33,22 @@ This project aims to deploy a microservices-based architecture application on Ku
 │   ├── variable.tf
 │   ├── vpc.tf
 │   ├── outputs.tf
+│   ├── terraform.tfvars
 ├── aws_eks/
 │   ├── main.tf
 │   ├── outputs.tf
 │   ├── variable.tf
+│   
 ├── images/
 │   ├── (optional)
 ├── readme.md
 │
 ├── terraform.tfstate
 
----
+ ```
 
  ## Components
- * Jenkins_CICD/: Contains Kubernetes manifests, Jenkins pipeline scripts, and monitoring configurations.
+* Jenkins_CICD/: Contains Kubernetes manifests, Jenkins pipeline scripts, and monitoring configurations.
 * Jenkins_Server/: Terraform scripts for provisioning a Jenkins server.
 * aws_eks/: Terraform scripts for provisioning an AWS EKS cluster.
 * images/: Placeholder directory for images or resources.
@@ -76,11 +78,30 @@ Kubernetes monitoring tools monitor cluster health and performance.
 ## Getting Started
 Clone this repository.
 
----
-  git clone 
---- 
-      
+```
+       git clone https://github.com/GfavourBraimah/Capstone_Project_Eks_Cluster-
+```
+
+Go into the Jenkins_Server and start up the Jenkins server instance 
+```
+      cd Jenkins_Server
+       terraform init  
+       terraform apply --auto-approve
+```
+
+Next go into your browser and input your ip address at port :8080
+
+Get the jenkins password 
+
+cat 
+
+
+
 Configure AWS credentials in Jenkins.
 Create Jenkins pipelines using the provided Jenkinsfiles.
 Run Terraform scripts to provision infrastructure.
 Deploy applications using Kubernetes manifests.
+
+
+![prov](/images/sockshop.png)
+![prov](/images/shockapp2.png)
