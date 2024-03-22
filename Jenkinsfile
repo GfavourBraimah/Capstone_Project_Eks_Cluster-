@@ -41,7 +41,7 @@ pipeline {
                     dir ('Jenkins_CICD/k8s') {
                         sh ('aws eks update-kubeconfig --name bog-eks-E5lGGDO3 --region us-east-1')
                         sh 'terraform init'
-                        sh 'terraform apply -auto-approve'
+                        sh 'terraform apply --auto-approve'
                     }
                 }
             }
